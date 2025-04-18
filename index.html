@@ -52,22 +52,41 @@
 
     .autocomplete-suggestions {
       position: absolute;
-      background: white;
       border: 1px solid #ccc;
       max-height: 200px;
       overflow-y: auto;
       width: 100%;
       display: none;
       z-index: 1000;
+      border-radius: 12px;
+      top: 100%;
+      left: 0;
     }
-    
+
+    body.dark-theme .autocomplete-suggestions {
+      background: rgba(15, 12, 41, 0.9);
+      border-color: #ffffff33;
+      color: #ffffff;
+    }
+
+    body.light-theme .autocomplete-suggestions {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: #00000033;
+      color: #1f2937;
+    }
+
     .autocomplete-item {
       padding: 8px;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
-    
-    .autocomplete-item:hover {
-      background: #f0f0f0;
+
+    body.dark-theme .autocomplete-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    body.light-theme .autocomplete-item:hover {
+      background: rgba(0, 0, 0, 0.05);
     }
 
     @keyframes float {
@@ -143,6 +162,7 @@
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
+      position: relative;
     }
 
     input[type="text"] {
@@ -338,6 +358,11 @@
         width: 3px !important;
         height: 3px !important;
       }
+
+      .autocomplete-suggestions {
+        max-height: 150px;
+        font-size: 0.9rem;
+      }
     }
 
     @media (min-width: 600px) and (max-width: 1024px) {
@@ -416,9 +441,9 @@
       <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
     </div>
     <div class="search-box">
-      <input type="text" id="search-input" list="suggestions" placeholder="Введите запрос..." />
-      <datalist id="suggestions"></datalist>
-      <button onclick="search()">Поиск</button>
+      <input type="text" id="search-input" placeholder="Введите запрос..." />
+      <div id="autocomplete" class="autocomplete-suggestions"></div>
+      <button id="search-button" onclick="search()">Поиск</button>
     </div>
     <div class="results-box" id="results-box"></div>
     <div class="disclaimer">Поиск ограничен индексом сайтов.</div>
@@ -453,7 +478,7 @@
     document.body.classList.add(savedTheme + '-theme');
     themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
-    // Индекс сайтов (100 сайтов)
+    // Индекс сайтов
     const siteIndex = [
         { url: 'https://ru.wikipedia.org', title: 'Википедия (RU)', description: 'Русскоязычная энциклопедия с открытым контентом.', keywords: ['Википедия', 'Wikipedia', 'энциклопедия', 'ru'] },
         { url: 'https://habr.com', title: 'Хабр', description: 'Платформа для IT-специалистов, статьи и новости.', keywords: ['Хабр', 'Habr', 'IT', 'технологии'] },
@@ -768,114 +793,123 @@
         { url: 'https://movielab.one', title: 'Movielab', description: 'Лучший пиратский сервис для просмотра фильмов и сериалов.', keywords: ['Movielab', 'Мувилаб', 'торрент', 'фильмы', 'сериалы'] },
       ];
 
-      const searchInput = document.getElementById('searchInput');
-      const autocompleteBox = document.getElementById('autocomplete');
-      const searchButton = document.getElementById('searchButton');
-      const resultsBox = document.getElementById('results');
-  
-      function showAutocomplete(query) {
-        autocompleteBox.innerHTML = '';
-        if (!query) {
-          autocompleteBox.style.display = 'none';
-          return;
-        }
-  
-        const suggestions = siteIndex
-          .filter((site) =>
-            [site.title.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())].some((field) =>
-              field.includes(query.toLowerCase())
-            )
-          )
-          .slice(0, 5);
-  
-        if (suggestions.length === 0) {
-          autocompleteBox.style.display = 'none';
-          return;
-        }
-  
-        suggestions.forEach((site) => {
-          const suggestion = document.createElement('div');
-          suggestion.className = 'autocomplete-item';
-          suggestion.textContent = site.title;
-          suggestion.addEventListener('click', () => {
-            searchInput.value = site.title;
-            hideAutocomplete();
-            search();
-          });
-          suggestion.addEventListener('touchstart', () => {
-            searchInput.value = site.title;
-            hideAutocomplete();
-            search();
-          });
-          autocompleteBox.appendChild(suggestion);
-        });
-  
-        autocompleteBox.style.display = 'block';
-      }
-  
-      function hideAutocomplete() {
+    const searchInput = document.getElementById('search-input');
+    const autocompleteBox = document.getElementById('autocomplete');
+    const searchButton = document.getElementById('search-button');
+    const resultsBox = document.getElementById('results-box');
+
+    function showAutocomplete(query) {
+      autocompleteBox.innerHTML = '';
+      if (!query) {
         autocompleteBox.style.display = 'none';
-        autocompleteBox.innerHTML = '';
+        return;
       }
-  
-      function search() {
-        const query = searchInput.value.trim().toLowerCase();
-        resultsBox.innerHTML = '';
-        hideAutocomplete();
-  
-        if (!query) {
-          resultsBox.innerHTML = '<div class="result-item">Пожалуйста, введите запрос.</div>';
-          return;
-        }
-  
-        const results = siteIndex.filter((site) =>
-          [site.title.toLowerCase(), site.description.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())].some(
-            (field) => field.includes(query)
+
+      const suggestions = siteIndex
+        .filter((site) =>
+          [site.title.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())].some((field) =>
+            field.includes(query.toLowerCase())
           )
-        );
-  
-        if (results.length === 0) {
-          resultsBox.innerHTML = '<div class="result-item">Ничего не найдено.</div>';
-          return;
-        }
-  
-        results.forEach((site) => {
-          const result = document.createElement('div');
-          result.className = 'result-item';
-          result.innerHTML = `<a href="${site.url}" target="_blank">${site.title}</a><p>${site.description}</p>`;
-          resultsBox.appendChild(result);
-        });
+        )
+        .slice(0, 5);
+
+      if (suggestions.length === 0) {
+        autocompleteBox.style.display = 'none';
+        return;
       }
-  
-      searchInput.addEventListener('input', () => {
-        showAutocomplete(searchInput.value);
-      });
-  
-      searchInput.addEventListener('keyup', () => {
-        showAutocomplete(searchInput.value);
-      });
-  
-      searchInput.addEventListener('focus', () => {
-        showAutocomplete(searchInput.value);
-      });
-  
-      searchButton.addEventListener('click', () => {
-        search();
-      });
-  
-      searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          search();
-        }
-      });
-  
-      document.addEventListener('click', (e) => {
-        if (!searchInput.contains(e.target) && !autocompleteBox.contains(e.target)) {
+
+      suggestions.forEach((site) => {
+        const suggestion = document.createElement('div');
+        suggestion.className = 'autocomplete-item';
+        suggestion.textContent = site.title;
+        suggestion.addEventListener('click', () => {
+          searchInput.value = site.title;
           hideAutocomplete();
-        }
+          search();
+        });
+        suggestion.addEventListener('touchstart', (e) => {
+          e.preventDefault(); // Предотвращаем лишние события
+          searchInput.value = site.title;
+          hideAutocomplete();
+          search();
+        });
+        autocompleteBox.appendChild(suggestion);
       });
+
+      autocompleteBox.style.display = 'block';
+    }
+
+    function hideAutocomplete() {
+      autocompleteBox.style.display = 'none';
+      autocompleteBox.innerHTML = '';
+    }
+
+    function search() {
+      const query = searchInput.value.trim().toLowerCase();
+      resultsBox.innerHTML = '';
+      hideAutocomplete();
+
+      if (!query) {
+        resultsBox.innerHTML = '<div class="result-item">Пожалуйста, введите запрос.</div>';
+        return;
+      }
+
+      const results = siteIndex.filter((site) =>
+        [site.title.toLowerCase(), site.description.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())].some(
+          (field) => field.includes(query)
+        )
+      );
+
+      if (results.length === 0) {
+        resultsBox.innerHTML = '<div class="result-item">Ничего не найдено.</div>';
+        return;
+      }
+
+      results.forEach((site) => {
+        const result = document.createElement('div');
+        result.className = 'result-item';
+        result.innerHTML = `<a href="${site.url}" target="_blank">${site.title}</a><p>${site.description}</p>`;
+        resultsBox.appendChild(result);
+      });
+    }
+
+    searchInput.addEventListener('input', () => {
+      showAutocomplete(searchInput.value);
+    });
+
+    searchInput.addEventListener('keyup', () => {
+      showAutocomplete(searchInput.value);
+    });
+
+    searchInput.addEventListener('focus', () => {
+      showAutocomplete(searchInput.value);
+    });
+
+    searchButton.addEventListener('click', () => {
+      search();
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        search();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !autocompleteBox.contains(e.target)) {
+        hideAutocomplete();
+      }
+    });
+
+    // Обработка фокуса для мобильных устройств
+    searchInput.addEventListener('focus', () => {
+      setTimeout(() => {
+        window.scrollTo({
+          top: searchInput.getBoundingClientRect().top + window.pageYOffset - 20,
+          behavior: 'smooth'
+        });
+      }, 100);
+    });
   </script>
 </body>
 </html>
-
-
