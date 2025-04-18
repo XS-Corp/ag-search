@@ -768,116 +768,112 @@
         { url: 'https://movielab.one', title: 'Movielab', description: 'Лучший пиратский сервис для просмотра фильмов и сериалов.', keywords: ['Movielab', 'Мувилаб', 'торрент', 'фильмы', 'сериалы'] },
       ];
 
-  // Поиск и автодополнение
-  const searchInput = document.getElementById('searchInput');
-  const autocompleteBox = document.getElementById('autocomplete');
-  const searchButton = document.getElementById('searchButton');
-  const resultsBox = document.getElementById('results');
+      const searchInput = document.getElementById('searchInput');
+      const autocompleteBox = document.getElementById('autocomplete');
+      const searchButton = document.getElementById('searchButton');
+      const resultsBox = document.getElementById('results');
   
-  function showAutocomplete(query) {
-    autocompleteBox.innerHTML = '';
-    if (!query) {
-      autocompleteBox.style.display = 'none';
-      return;
-    }
+      function showAutocomplete(query) {
+        autocompleteBox.innerHTML = '';
+        if (!query) {
+          autocompleteBox.style.display = 'none';
+          return;
+        }
   
-    const suggestions = siteIndex
-      .filter((site) =>
-        [site.title.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())].some((field) =>
-          field.includes(query.toLowerCase())
-        )
-      )
-      .slice(0, 5); // Ограничим до 5 подсказок
+        const suggestions = siteIndex
+          .filter((site) =>
+            [site.title.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())].some((field) =>
+              field.includes(query.toLowerCase())
+            )
+          )
+          .slice(0, 5);
   
-    if (suggestions.length === 0) {
-      autocompleteBox.style.display = 'none';
-      return;
-    }
+        if (suggestions.length === 0) {
+          autocompleteBox.style.display = 'none';
+          return;
+        }
   
-    suggestions.forEach((site) => {
-      const suggestion = document.createElement('div');
-      suggestion.className = 'autocomplete-item';
-      suggestion.textContent = site.title;
-      suggestion.addEventListener('click', () => {
-        searchInput.value = site.title;
-        autocompleteBox.style.display = 'none';
-        search(); // Выполняем поиск при выборе подсказки
-      });
-      autocompleteBox.appendChild(suggestion);
-    });
+        suggestions.forEach((site) => {
+          const suggestion = document.createElement('div');
+          suggestion.className = 'autocomplete-item';
+          suggestion.textContent = site.title;
+          suggestion.addEventListener('click', () => {
+            searchInput.value = site.title;
+            hideAutocomplete();
+            search();
+          });
+          suggestion.addEventListener('touchstart', () => {
+            searchInput.value = site.title;
+            hideAutocomplete();
+            search();
+          });
+          autocompleteBox.appendChild(suggestion);
+        });
   
-    autocompleteBox.style.display = 'block';
-  }
-  
-  function hideAutocomplete() {
-    autocompleteBox.style.display = 'none';
-    autocompleteBox.innerHTML = '';
-  }
-  
-  function search() {
-    const query = searchInput.value.trim().toLowerCase();
-    resultsBox.innerHTML = '';
-    hideAutocomplete(); // Скрываем автодополнение при поиске
-  
-    if (!query) {
-      resultsBox.innerHTML = '<div class="result-item">Пожалуйста, введите запрос.</div>';
-      return;
-    }
-  
-    const results = siteIndex.filter((site) =>
-      [site.title.toLowerCase(), site.description.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())].some(
-        (field) => field.includes(query)
-      )
-    );
-  
-    if (results.length === 0) {
-      resultsBox.innerHTML = '<div class="result-item">Ничего не найдено.</div>';
-      return;
-    }
-  
-    results.forEach((site) => {
-      const result = document.createElement('div');
-      result.className = 'result-item';
-      result.innerHTML = `<a href="${site.url}" target="_blank">${site.title}</a><p>${site.description}</p>`;
-      resultsBox.appendChild(result);
-    });
-  }
-  
-  // Обработчики событий
-  searchInput.addEventListener('input', () => {
-    showAutocomplete(searchInput.value);
-  });
-  
-  searchButton.addEventListener('click', () => {
-    search();
-  });
-  
-  searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      search();
-    }
-  });
-  
-  // Скрытие автодополнения при клике вне поля
-  document.addEventListener('click', (e) => {
-    if (!searchInput.contains(e.target) && !autocompleteBox.contains(e.target)) {
-      hideAutocomplete();
-    }
-  });
-
-    // Поиск на конкретном сайте
-    function searchOnSite(url, query) {
-      const searchUrl = `https://www.google.com/search?q=site:${url}+${query}`;
-      window.open(searchUrl, '_blank');
-    }
-
-    // Поиск по Enter
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        search();
+        autocompleteBox.style.display = 'block';
       }
-    });
+  
+      function hideAutocomplete() {
+        autocompleteBox.style.display = 'none';
+        autocompleteBox.innerHTML = '';
+      }
+  
+      function search() {
+        const query = searchInput.value.trim().toLowerCase();
+        resultsBox.innerHTML = '';
+        hideAutocomplete();
+  
+        if (!query) {
+          resultsBox.innerHTML = '<div class="result-item">Пожалуйста, введите запрос.</div>';
+          return;
+        }
+  
+        const results = siteIndex.filter((site) =>
+          [site.title.toLowerCase(), site.description.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())].some(
+            (field) => field.includes(query)
+          )
+        );
+  
+        if (results.length === 0) {
+          resultsBox.innerHTML = '<div class="result-item">Ничего не найдено.</div>';
+          return;
+        }
+  
+        results.forEach((site) => {
+          const result = document.createElement('div');
+          result.className = 'result-item';
+          result.innerHTML = `<a href="${site.url}" target="_blank">${site.title}</a><p>${site.description}</p>`;
+          resultsBox.appendChild(result);
+        });
+      }
+  
+      searchInput.addEventListener('input', () => {
+        showAutocomplete(searchInput.value);
+      });
+  
+      searchInput.addEventListener('keyup', () => {
+        showAutocomplete(searchInput.value);
+      });
+  
+      searchInput.addEventListener('focus', () => {
+        showAutocomplete(searchInput.value);
+      });
+  
+      searchButton.addEventListener('click', () => {
+        search();
+      });
+  
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          search();
+        }
+      });
+  
+      document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !autocompleteBox.contains(e.target)) {
+          hideAutocomplete();
+        }
+      });
   </script>
 </body>
 </html>
