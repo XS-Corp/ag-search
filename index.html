@@ -803,11 +803,11 @@
 
     // Запрос к Hugging Face API
     async function getAIResponse(query) {
-      const apiKey = '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'; 
-      const model = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
+      const apiKey = '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'; 
+      const model = 'mistralai/Mixtral-8x7B-Instruct-v0.1'; // Модель для примера
       const prompt = `Ты AG AI Mini, умный ассистент. Дай максимально краткий ответ на вопрос пользователя на русском языке (не более 1-2 предложений). Если нужны источники, укажи их в формате: [Источник: <название>]. Если источников нет, напиши: [Источник: Общие знания].
 
-Вопрос: ${query}`;
+    Вопрос: ${query}`;
 
       try {
         const response = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
@@ -826,26 +826,64 @@
           })
         });
 
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Ошибка API:', response.status, errorText);
+          return `Ошибка API: ${response.status}. Попробуйте позже. [Источник: Нет данных]`;
+        }
+
         const data = await response.json();
+        console.log('Ответ API:', data); // Для отладки
+
         if (data && data[0] && data[0].generated_text) {
           let aiText = data[0].generated_text.replace(prompt, '').trim();
           
-          // Если модель не указала источник, подберём из siteIndex
-          if (!aiText.includes('[Источник:')) {
+          // Парсим источник из ответа
+          const sourceMatch = aiText.match(/\[Источник: ([^\]]+)\]/);
+          let sourceName = sourceMatch ? sourceMatch[1] : null;
+          let sourceUrl = null;
+
+          // Если источник есть, ищем URL в siteIndex
+          if (sourceName && sourceName !== 'Общие знания' && sourceName !== 'Нет данных') {
+            const relevantSite = siteIndex.find((site) =>
+              site.title.toLowerCase() === sourceName.toLowerCase()
+            );
+            if (relevantSite) {
+              sourceUrl = relevantSite.url;
+            }
+          }
+
+          // Если источника нет или он не найден, подбираем из siteIndex
+          if (!sourceName || !sourceUrl) {
             const relevantSite = siteIndex.find((site) =>
               [site.title.toLowerCase(), site.description.toLowerCase(), ...site.keywords.map((k) => k.toLowerCase())]
                 .some((field) => field.includes(query.toLowerCase()))
             );
-            aiText += relevantSite
-              ? ` [Источник: ${relevantSite.title}]`
-              : ' [Источник: Общие знания]';
+            if (relevantSite) {
+              sourceName = relevantSite.title;
+              sourceUrl = relevantSite.url;
+              aiText = aiText.replace(/\[Источник: [^\]]+\]/, '') + ` [Источник: ${sourceName}]`;
+            } else {
+              sourceName = 'Общие знания';
+              aiText = aiText.replace(/\[Источник: [^\]]+\]/, '') + ' [Источник: Общие знания]';
+            }
+          }
+
+          // Делаем источник кликабельным
+          if (sourceUrl) {
+            aiText = aiText.replace(
+              `\[Источник: ${sourceName}\]`,
+              `<a href="${sourceUrl}" target="_blank">[Источник: ${sourceName}]</a>`
+            );
           }
 
           return aiText;
         } else {
+          console.error('Некорректный ответ API:', data);
           return 'Не удалось получить ответ от AG AI Mini. [Источник: Нет данных]';
         }
       } catch (error) {
+        console.error('Ошибка запроса:', error.message);
         return `Ошибка: ${error.message}. [Источник: Нет данных]`;
       }
     }
@@ -915,5 +953,7 @@
   </script>
 </body>
 </html>
+
+
 
 
