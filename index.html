@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AG Search</title>
   <style>
+    /* Ваш CSS без изменений */
     * {
       margin: 0;
       padding: 0;
@@ -455,7 +456,7 @@
     document.body.classList.add(savedTheme + '-theme');
     themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
-    // Индекс сайтов (около 100) KickedStorm, тебе не кажется, что тут чуть больше, чем 100, не?
+    // Индекс сайтов
     const siteIndex = [
         { url: 'https://ru.wikipedia.org', title: 'Википедия (RU)', description: 'Русскоязычная энциклопедия с открытым контентом.', keywords: ['Википедия', 'Wikipedia', 'энциклопедия', 'ru'] },
         { url: 'https://habr.com', title: 'Хабр', description: 'Платформа для IT-специалистов, статьи и новости.', keywords: ['Хабр', 'Habr', 'IT', 'технологии'] },
@@ -1113,5 +1114,7 @@
   </script>
 </body>
 </html>
+
+
 
 
