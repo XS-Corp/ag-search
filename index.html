@@ -3,37 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AG Search</title>
+  <title>AG Search (Beta)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    /* CSS */
+    /* Обнуление стилей */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
+    /* Основной стиль страницы */
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: 'Inter', sans-serif;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow-y: auto;
-      padding: 2vw;
+      padding: 20px;
+      transition: background 0.3s ease, color 0.3s ease;
       position: relative;
-      transition: background 0.5s ease;
+      overflow-x: hidden;
+      line-height: 1.5;
     }
 
+    /* Темная и светлая темы */
     body.dark-theme {
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      color: #ffffff;
+      background: linear-gradient(135deg, #2c2c54, #1a1a2e);
+      color: #e0e0e0;
     }
 
     body.light-theme {
-      background: linear-gradient(135deg, #e0e7ff, #c7d2fe, #a5b4fc);
+      background: linear-gradient(135deg, #e8f0ff, #d9e2ff);
       color: #1f2937;
     }
 
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Заголовок */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: #007AFF;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Частицы */
     #particles {
       position: fixed;
       top: 0;
@@ -46,14 +88,29 @@
 
     .particle {
       position: absolute;
-      background: rgba(255, 106, 0, 0.7);
+      background: rgba(167, 199, 231, 0.5);
       border-radius: 50%;
-      animation: float 10s infinite ease-in-out;
+      animation: float 12s infinite ease-in-out;
     }
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 1.4rem;
+      }
+
+      .theme-toggle {
+        font-size: 1.1rem;
+      }
+
+      .particle {
+        width: 2px !important;
+        height: 2px !important;
+      }
     }
 
     .search-container {
@@ -69,6 +126,14 @@
       position: relative;
       z-index: 1;
       transition: background 0.5s ease;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     body.dark-theme .search-container {
@@ -87,11 +152,9 @@
     }
 
     .search-header {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding-bottom: 10px;
-      position: relative;
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: #007AFF;
     }
 
     .search-header h2 {
@@ -99,8 +162,9 @@
       font-weight: 600;
       text-align: center;
       flex: 1;
-      background: linear-gradient(90deg, #ff6a00, #ee0979);
+      background: linear-gradient(90deg, #72b6ff, #0059b9);
       -webkit-background-clip: text;
+      background-clip: text;
       color: transparent;
     }
 
@@ -112,6 +176,9 @@
       transition: transform 0.3s ease;
       position: absolute;
       right: 0;
+      top: 10px;
+      right: 10px;
+      margin: 5px;
     }
 
     .theme-toggle:hover {
@@ -138,36 +205,65 @@
     }
 
     body.dark-theme input[type="text"] {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
+      padding: 8px;
+      font-size: 0.9rem;
+      border: 1px solid #A7C7E7;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 4px;
+      color: inherit;
+      width: 225%;
+      max-width: 515px;
+      transition: border-color 0.2s ease;
+      outline: none;
+      border-color: #34C759;
     }
 
     body.light-theme input[type="text"] {
-      background: rgba(0, 0, 0, 0.05);
-      color: #1f2937;
+      padding: 8px;
+      font-size: 0.9rem;
+      border: 1px solid #A7C7E7;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 4px;
+      color: inherit;
+      width: 225%;
+      max-width: 515px;
+      transition: border-color 0.2s ease;
+      outline: none;
+      border-color: #34C759;
     }
 
     input[type="text"]:focus {
+      padding: 8px;
+      font-size: 0.9rem;
+      border: 1px solid #A7C7E7;
       background: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 10px rgba(255, 106, 0, 0.5);
+      backdrop-filter: blur(12px);
+      border-radius: 4px;
+      color: inherit;
+      width: 225%;
+      max-width: 515px;
+      transition: border-color 0.2s ease;
+      outline: none;
+      border-color: #34C759;
     }
 
     button {
-      padding: 12px 20px;
-      font-size: 1rem;
-      font-weight: 500;
+      padding: 8px 16px;
+      font-size: 0.9rem;
       border: none;
-      background: linear-gradient(90deg, #ff6a00, #ee0979);
+      background: linear-gradient(90deg, #007AFF, #34C759);
       color: #fff;
-      border-radius: 12px;
+      border-radius: 4px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: background 0.2s ease, transform 0.2s ease;
     }
 
     button:hover {
-      background: linear-gradient(90deg, #ee0979, #ff6a00);
+      background: linear-gradient(90deg, #34C759, #007AFF);
       transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(255, 106, 0, 0.5);
+      box-shadow: 0 0 15px rgba(0, 51, 255, 0.5);
     }
 
     button:active {
@@ -178,11 +274,11 @@
       max-height: 60vh;
       overflow-y: auto;
       border-radius: 12px;
-      padding: 15px;
+      padding: 12px;
       font-size: 1rem;
       line-height: 1.5;
       scrollbar-width: thin;
-      scrollbar-color: #ff6a00 transparent;
+      scrollbar-color: #49a1ff transparent;
     }
 
     body.dark-theme .results-box {
@@ -198,7 +294,7 @@
     }
 
     .results-box::-webkit-scrollbar-thumb {
-      background: #ff6a00;
+      background: #11a8ff;
       border-radius: 3px;
     }
 
@@ -225,13 +321,13 @@
     }
 
     .result-item a {
-      color: #ff6a00;
+      color: #007AFF;
       text-decoration: none;
       font-weight: 600;
     }
 
     .result-item a:hover {
-      color: #ee0979;
+      color: #34C759;
     }
 
     .result-item p {
@@ -243,7 +339,7 @@
       background: none;
       border: none;
       font-size: 0.8rem;
-      color: #ff6a00;
+      color: #20c0ff;
       cursor: pointer;
       opacity: 0.7;
       transition: opacity 0.3s ease;
@@ -254,14 +350,14 @@
     }
 
     body.light-theme .search-on-site {
-      color: #ee0979;
+      color: #0071c8;
     }
 
     .ai-response {
       margin-bottom: 15px;
       padding: 10px 15px;
       border-radius: 12px;
-      background: rgba(255, 106, 0, 0.2);
+      background: rgba(0, 217, 255, 0.2);
       animation: slideIn 0.5s ease-out;
     }
 
@@ -270,13 +366,13 @@
     }
 
     .ai-response a {
-      color: #ff6a00;
+      color: #20c0ff;
       text-decoration: none;
       font-weight: 600;
     }
 
     .ai-response a:hover {
-      color: #ee0979;
+      color: #0071c8;
     }
 
     @keyframes slideIn {
@@ -289,8 +385,9 @@
       font-size: 0.8rem;
       padding: 5px 0;
       margin-top: 10px;
-      background: linear-gradient(90deg, #ff6a00, #ee0979);
+      background: linear-gradient(90deg, #20c0ff, #0071c8);
       -webkit-background-clip: text;
+      background-clip: text;
       color: transparent;
     }
 
@@ -413,28 +510,29 @@
 </head>
 <body class="dark-theme">
   <div id="particles"></div>
-  <div class="search-container">
-    <div class="search-header">
-      <h2>AG Search</h2>
-      <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    <div class="search-container">
+      <div class="search-header">
+        <h2>AG Search</h2>
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="search-input" list="suggestions" placeholder="Введите запрос..." />
+        <datalist id="suggestions"></datalist>
+        <button onclick="search()">Поиск</button>
+      </div>
+      <div class="results-box" id="results-box"></div>
+      <div class="disclaimer">Поиск ограничен индексом сайтов.</div>
     </div>
-    <div class="search-box">
-      <input type="text" id="search-input" list="suggestions" placeholder="Введите запрос..." />
-      <datalist id="suggestions"></datalist>
-      <button onclick="search()">Поиск</button>
-    </div>
-    <div class="results-box" id="results-box"></div>
-    <div class="disclaimer">Поиск ограничен индексом сайтов.</div>
   </div>
 
   <script>
     // Частицы
     const particleContainer = document.getElementById('particles');
-    const particleCount = window.innerWidth < 600 ? 20 : window.innerWidth > 1920 ? 80 : 50;
+    const particleCount = window.innerWidth < 600 ? 10 : 30;
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
       particle.classList.add('particle');
-      particle.style.width = `${Math.random() * 5 + 2}px`;
+      particle.style.width = `${Math.random() * 4 + 1}px`;
       particle.style.height = particle.style.width;
       particle.style.left = `${Math.random() * 100}vw`;
       particle.style.top = `${Math.random() * 100}vh`;
@@ -447,8 +545,9 @@
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
       document.body.classList.toggle('light-theme');
-      themeToggle.textContent = document.body.classList.contains('dark-theme') ? '🌙' : '☀️';
-      localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+      const theme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+      localStorage.setItem('theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
     }
 
     // Загрузка темы
@@ -478,8 +577,6 @@
         { url: 'https://tiktok.com', title: 'TikTok', description: 'Платформа для коротких видео.', keywords: ['TikTok', 'ТикТок', 'видео'] },
         { url: 'https://netflix.com', title: 'Netflix', description: 'Стриминговый сервис для фильмов.', keywords: ['Netflix', 'Нетфликс', 'фильмы'] },
         { url: 'https://microsoftonline.com', title: 'Microsoft Online', description: 'Облачные сервисы Microsoft.', keywords: ['Microsoft Online', 'Майкрософт', 'облако'] },
-        { url: 'https://bing.com', title: 'Bing', description: 'Поисковая система от Microsoft.', keywords: ['Bing', 'Бинг', 'поиск'] },
-        { url: 'https://pornhub.com', title: 'Pornhub', description: 'Платформа для взрослого контента.', keywords: ['Pornhub', 'взрослый контент'] },
         { url: 'https://linkedin.com', title: 'LinkedIn', description: 'Социальная сеть для профессионалов.', keywords: ['LinkedIn', 'Линкедин', 'работа'] },
         { url: 'https://live.com', title: 'Live', description: 'Сервисы Microsoft, включая почту.', keywords: ['Live', 'Майкрософт', 'почта'] },
         { url: 'https://naver.com', title: 'Naver', description: 'Южнокорейский поиск и портал.', keywords: ['Naver', 'Навер', 'поиск'] },
@@ -808,71 +905,6 @@
         { url: 'https://airtable.com', title: 'Airtable', description: 'Инструмент для управления проектами и данными.', keywords: ['Airtable', 'проекты', 'данные', 'управление'] },
         { url: 'https://monday.com', title: 'Monday.com', description: 'Платформа для управления командами.', keywords: ['Monday', 'проекты', 'управление', 'команды'] },
         { url: 'https://clickup.com', title: 'ClickUp', description: 'Инструмент для управления задачами.', keywords: ['ClickUp', 'задачи', 'управление', 'проекты'] },
-        { url: 'https://jira.com', title: 'Jira', description: 'Система управления проектами для разработки.', keywords: ['Jira', 'проекты', 'разработка', 'управление'] },
-        { url: 'https://bitbucket.org', title: 'Bitbucket', description: 'Платформа для управления кодом.', keywords: ['Bitbucket', 'код', 'разработка', 'хранилище'] },
-        { url: 'https://gitlab.com', title: 'GitLab', description: 'Платформа для DevOps и управления кодом.', keywords: ['GitLab', 'DevOps', 'код', 'разработка'] },
-        { url: 'https://gitea.io', title: 'Gitea', description: 'Легковесная платформа для Git.', keywords: ['Gitea', 'Git', 'код', 'разработка'] },
-        { url: 'https://sourceforge.net', title: 'SourceForge', description: 'Хранилище для открытого ПО.', keywords: ['SourceForge', 'софт', 'открытый код', 'разработка'] },
-        { url: 'https://debian.org', title: 'Debian', description: 'Сайт операционной системы Debian.', keywords: ['Debian', 'Linux', 'ОС', 'софт'] },
-        { url: 'https://ubuntu.com', title: 'Ubuntu', description: 'Сайт операционной системы Ubuntu.', keywords: ['Ubuntu', 'Linux', 'ОС', 'софт'] },
-        { url: 'https://archlinux.org', title: 'Arch Linux', description: 'Сайт операционной системы Arch Linux.', keywords: ['Arch Linux', 'Linux', 'ОС', 'софт'] },
-        { url: 'https://fedora.org', title: 'Fedora', description: 'Сайт операционной системы Fedora.', keywords: ['Fedora', 'Linux', 'ОС', 'софт'] },
-        { url: 'https://openssl.org', title: 'OpenSSL', description: 'Библиотека для шифрования данных.', keywords: ['OpenSSL', 'шифрование', 'софт', 'безопасность'] },
-        { url: 'https://nginx.org', title: 'NGINX', description: 'Веб-сервер и прокси-сервер.', keywords: ['NGINX', 'веб-сервер', 'софт', 'сервер'] },
-        { url: 'https://apache.org', title: 'Apache', description: 'Фонд программного обеспечения Apache.', keywords: ['Apache', 'софт', 'сервер', 'открытый код'] },
-        { url: 'https://mysql.com', title: 'MySQL', description: 'Система управления базами данных.', keywords: ['MySQL', 'базы данных', 'софт', 'сервер'] },
-        { url: 'https://postgresql.org', title: 'PostgreSQL', description: 'Мощная СУБД с открытым кодом.', keywords: ['PostgreSQL', 'базы данных', 'софт', 'сервер'] },
-        { url: 'https://mongodb.com', title: 'MongoDB', description: 'NoSQL база данных.', keywords: ['MongoDB', 'базы данных', 'софт', 'NoSQL'] },
-        { url: 'https://redis.io', title: 'Redis', description: 'Хранилище данных в памяти.', keywords: ['Redis', 'базы данных', 'софт', 'хранилище'] },
-        { url: 'https://elastic.co', title: 'Elasticsearch', description: 'Поисковая и аналитическая система.', keywords: ['Elasticsearch', 'поиск', 'аналитика', 'софт'] },
-        { url: 'https://hadoop.apache.org', title: 'Hadoop', description: 'Фреймворк для обработки больших данных.', keywords: ['Hadoop', 'большие данные', 'софт', 'аналитика'] },
-        { url: 'https://spark.apache.org', title: 'Apache Spark', description: 'Платформа для обработки больших данных.', keywords: ['Spark', 'большие данные', 'софт', 'аналитика'] },
-        { url: 'https://tensorflow.org', title: 'TensorFlow', description: 'Библиотека для машинного обучения.', keywords: ['TensorFlow', 'машинное обучение', 'ИИ', 'софт'] },
-        { url: 'https://pytorch.org', title: 'PyTorch', description: 'Фреймворк для глубокого обучения.', keywords: ['PyTorch', 'глубокое обучение', 'ИИ', 'софт'] },
-        { url: 'https://opencv.org', title: 'OpenCV', description: 'Библиотека для компьютерного зрения.', keywords: ['OpenCV', 'компьютерное зрение', 'ИИ', 'софт'] },
-        { url: 'https://scikit-learn.org', title: 'scikit-learn', description: 'Библиотека для машинного обучения на Python.', keywords: ['scikit-learn', 'машинное обучение', 'Python', 'ИИ'] },
-        { url: 'https://numpy.org', title: 'NumPy', description: 'Библиотека для научных вычислений.', keywords: ['NumPy', 'Python', 'наука', 'вычисления'] },
-        { url: 'https://pandas.pydata.org', title: 'Pandas', description: 'Библиотека для анализа данных на Python.', keywords: ['Pandas', 'Python', 'данные', 'аналитика'] },
-        { url: 'https://matplotlib.org', title: 'Matplotlib', description: 'Библиотека для визуализации данных.', keywords: ['Matplotlib', 'Python', 'визуализация', 'данные'] },
-        { url: 'https://seaborn.pydata.org', title: 'Seaborn', description: 'Библиотека для статистической визуализации.', keywords: ['Seaborn', 'Python', 'визуализация', 'данные'] },
-        { url: 'https://jupyter.org', title: 'Jupyter', description: 'Интерактивная среда для программирования.', keywords: ['Jupyter', 'Python', 'программирование', 'ноутбуки'] },
-        { url: 'https://anaconda.com', title: 'Anaconda', description: 'Дистрибутив для Python и R.', keywords: ['Anaconda', 'Python', 'R', 'программирование'] },
-        { url: 'https://rstudio.com', title: 'RStudio', description: 'Среда разработки для R.', keywords: ['RStudio', 'R', 'программирование', 'аналитика'] },
-        { url: 'https://cran.r-project.org', title: 'CRAN', description: 'Репозиторий пакетов для R.', keywords: ['CRAN', 'R', 'пакеты', 'программирование'] },
-        { url: 'https://bioconductor.org', title: 'Bioconductor', description: 'Инструменты для биоинформатики.', keywords: ['Bioconductor', 'биоинформатика', 'R', 'наука'] },
-        { url: 'https://blast.ncbi.nlm.nih.gov', title: 'BLAST', description: 'Инструмент для анализа генетических последовательностей.', keywords: ['BLAST', 'генетика', 'биоинформатика', 'наука'] },
-        { url: 'https://genome.ucsc.edu', title: 'UCSC Genome Browser', description: 'Браузер геномов для исследований.', keywords: ['UCSC', 'геномы', 'биоинформатика', 'наука'] },
-        { url: 'https://ensembl.org', title: 'Ensembl', description: 'Платформа для геномных данных.', keywords: ['Ensembl', 'геномы', 'биоинформатика', 'наука'] },
-        { url: 'https://ebi.ac.uk', title: 'EMBL-EBI', description: 'Европейский институт биоинформатики.', keywords: ['EMBL-EBI', 'биоинформатика', 'наука', 'данные'] },
-        { url: 'https://uniprot.org', title: 'UniProt', description: 'База данных белков.', keywords: ['UniProt', 'белки', 'биоинформатика', 'наука'] },
-        { url: 'https://rcsb.org', title: 'RCSB PDB', description: 'Банк данных белковых структур.', keywords: ['RCSB', 'белки', 'биоинформатика', 'наука'] },
-        { url: 'https://clinicaltrials.gov', title: 'ClinicalTrials', description: 'Реестр клинических исследований.', keywords: ['ClinicalTrials', 'медицина', 'исследования', 'здоровье'] },
-        { url: 'https://who.int', title: 'WHO', description: 'Сайт Всемирной организации здравоохранения.', keywords: ['WHO', 'здоровье', 'медицина', 'ВОЗ'] },
-        { url: 'https://cdc.gov', title: 'CDC', description: 'Центры по контролю и профилактике заболеваний США.', keywords: ['CDC', 'здоровье', 'медицина', 'США'] },
-        { url: 'https://nih.gov', title: 'NIH', description: 'Национальные институты здравоохранения США.', keywords: ['NIH', 'здоровье', 'медицина', 'исследования'] },
-        { url: 'https://medlineplus.gov', title: 'MedlinePlus', description: 'Медицинская информация для пациентов.', keywords: ['MedlinePlus', 'здоровье', 'медицина', 'информация'] },
-        { url: 'https://everydayhealth.com', title: 'Everyday Health', description: 'Ресурс о здоровье и образе жизни.', keywords: ['Everyday Health', 'здоровье', 'лайфстайл', 'медицина'] },
-        { url: 'https://menshealth.com', title: 'Men’s Health', description: 'Журнал о здоровье и фитнесе для мужчин.', keywords: ['Men’s Health', 'здоровье', 'фитнес', 'мужчины'] },
-        { url: 'https://womenshealthmag.com', title: 'Women’s Health', description: 'Журнал о здоровье и фитнесе для женщин.', keywords: ['Women’s Health', 'здоровье', 'фитнес', 'женщины'] },
-        { url: 'https://prevention.com', title: 'Prevention', description: 'Ресурс о профилактике заболеваний.', keywords: ['Prevention', 'здоровье', 'профилактика', 'медицина'] },
-        { url: 'https://verywellhealth.com', title: 'Verywell Health', description: 'Информация о здоровье и благополучии.', keywords: ['Verywell Health', 'здоровье', 'медицина', 'информация'] },
-        { url: 'https://psychologytoday.com', title: 'Psychology Today', description: 'Ресурс о психологии и ментальном здоровье.', keywords: ['Psychology Today', 'психология', 'здоровье', 'ментальное'] },
-        { url: 'https://mindbodygreen.com', title: 'Mindbodygreen', description: 'Ресурс о wellness и здоровом образе жизни.', keywords: ['Mindbodygreen', 'здоровье', 'wellness', 'лайфстайл'] },
-        { url: 'https://yogajournal.com', title: 'Yoga Journal', description: 'Журнал о йоге и медитации.', keywords: ['Yoga Journal', 'йога', 'медитация', 'здоровье'] },
-        { url: 'https://insighttimer.com', title: 'Insight Timer', description: 'Приложение для медитации и сна.', keywords: ['Insight Timer', 'медитация', 'сон', 'здоровье'] },
-        { url: 'https://myfitnesspal.com', title: 'MyFitnessPal', description: 'Приложение для отслеживания питания.', keywords: ['MyFitnessPal', 'питание', 'фитнес', 'здоровье'] },
-        { url: 'https://strava.com', title: 'Strava', description: 'Приложение для отслеживания тренировок.', keywords: ['Strava', 'фитнес', 'спорт', 'тренировки'] },
-        { url: 'https://fitbit.com', title: 'Fitbit', description: 'Устройства и приложение для фитнеса.', keywords: ['Fitbit', 'фитнес', 'здоровье', 'трекер'] },
-        { url: 'https://garmin.com', title: 'Garmin', description: 'Устройства для фитнеса и навигации.', keywords: ['Garmin', 'фитнес', 'навигация', 'трекер'] },
-        { url: 'https://komoot.com', title: 'Komoot', description: 'Планирование маршрутов для походов и велоспорта.', keywords: ['Komoot', 'спорт', 'маршруты', 'туризм'] },
-        { url: 'https://alltrails.com', title: 'AllTrails', description: 'Приложение для пеших маршрутов.', keywords: ['AllTrails', 'туризм', 'маршруты', 'спорт'] },
-        { url: 'https://rei.com', title: 'REI', description: 'Магазин товаров для активного отдыха.', keywords: ['REI', 'туризм', 'спорт', 'магазин'] },
-        { url: 'https://backcountry.com', title: 'Backcountry', description: 'Магазин для outdoor-активностей.', keywords: ['Backcountry', 'туризм', 'спорт', 'магазин'] },
-        { url: 'https://patagonia.com', title: 'Patagonia', description: 'Бренд одежды для активного отдыха.', keywords: ['Patagonia', 'одежда', 'туризм', 'эко'] },
-        { url: 'https://thenorthface.com', title: 'The North Face', description: 'Бренд для outdoor-активностей.', keywords: ['The North Face', 'одежда', 'туризм', 'спорт'] },
-        { url: 'https://columbia.com', title: 'Columbia', description: 'Бренд спортивной одежды.', keywords: ['Columbia', 'одежда', 'туризм', 'спорт'] },
-        { url: 'https://arcgis.com', title: 'ArcGIS', description: 'Платформа для геоаналитики и карт.', keywords: ['ArcGIS', 'карты', 'геоаналитика', 'данные'] },
-        { url: 'https://mapbox.com', title: 'Mapbox', description: 'Сервис для создания интерактивных карт.', keywords: ['Mapbox', 'карты', 'гео', 'разработка'] },
         { url: 'https://flightradar24.com', title: 'Flightradar24', description: 'Отслеживание полётов в реальном времени.', keywords: ['Flightradar24', 'авиация', 'полёты', 'отслеживание'] },
         { url: 'https://seatguru.com', title: 'SeatGuru', description: 'Информация о местах в самолётах.', keywords: ['SeatGuru', 'авиация', 'путешествия', 'полёты'] },
         { url: 'https://rome2rio.com', title: 'Rome2rio', description: 'Планирование маршрутов путешествий.', keywords: ['Rome2rio', 'путешествия', 'маршруты', 'план'] },
@@ -1229,6 +1261,4 @@
   </script>
 </body>
 </html>
-
-
 
