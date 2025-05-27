@@ -618,7 +618,7 @@
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Ошибка API:', response.status, errorText);
-          return `Ошибка API: ${response.status}. Попробуйте позже. [Источник: Нет данных]`;
+          return `Вы столкнулись с ошибкой подключения к серварам XS, попробуйте снова позже, если это не помогает - проверьте статус серверов по ссылке https://xs-corp.github.io/ag/status.html`;
         }
     
         const data = await response.json();
